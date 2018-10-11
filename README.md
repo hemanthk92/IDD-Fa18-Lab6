@@ -1,6 +1,6 @@
 # ChatBot
 
-*A lab report by Hemanth Kondapalli Student*
+*A lab report by Hemanth Kondapalli*
 
 ## In this Report
 
