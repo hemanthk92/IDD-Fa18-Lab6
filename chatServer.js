@@ -9,6 +9,7 @@ var app = express(); // webapp
 var http = require('http').Server(app); // connects http library to server
 var io = require('socket.io')(http); // connect websocket library to server
 var serverPort = 8000;
+var userResponses = [];
 
 
 //---------------------- WEBAPP SERVER SETUP ---------------------------------//
@@ -30,8 +31,8 @@ io.on('connect', function(socket) {
   var questionNum = 0; // keep count of question, used for IF condition.
   socket.on('loaded', function() { // we wait until the client has loaded and contacted us that it is ready to go.
 
-    socket.emit('answer', "Hey, hello I am \"___*-\" a simple chat bot example."); //We start with the introduction;
-    setTimeout(timedQuestion, 5000, socket, "What is your name?"); // Wait a moment and respond with a question.
+    socket.emit('answer', "Hey, hello I am SimpleBoot a simple chat bot example."); //We start with the introduction;
+    setTimeout(timedQuestion, 1000, socket, "What is your name?"); // Wait a moment and respond with a question.
 
   });
   socket.on('message', (data) => { // If we get a new message from the client we process it;
@@ -52,41 +53,27 @@ function bot(data, socket, questionNum) {
   /// These are the main statments that make up the conversation.
   if (questionNum == 0) {
     answer = 'Hello ' + input + ' :-)'; // output response
-    waitTime = 5000;
-    question = 'How old are you?'; // load next question
+    waitTime = 1000;
+    question = 'When do you want to travel the Winter or the Summer?'; // load next question
   } else if (questionNum == 1) {
-    answer = 'Really, ' + input + ' years old? So that means you were born in: ' + (2018 - parseInt(input)); // output response
-    waitTime = 5000;
-    question = 'Where do you live?'; // load next question
+    userResponses.push(input);
+    answer = 'Nothing like a ' + input + ' vacation!';
+    waitTime = 2000;
+    question = 'Do you want to go to a warm destination or a cold destination?'; // load next question
   } else if (questionNum == 2) {
-    answer = 'Cool! I have never been to ' + input + '.';
-    waitTime = 5000;
-    question = 'Whats your favorite color?'; // load next question
+    userResponses.push(input);
+    answer = 'Me as well!'
+    waitTime = 2000;
+    question = 'Are you looking to see city landmarks or do recreation activities?'; // load next question
   } else if (questionNum == 3) {
+    userResponses.push(input);
     answer = 'Ok, ' + input + ' it is.';
-    socket.emit('changeBG', input.toLowerCase());
-    waitTime = 5000;
-    question = 'Can you still read the font?'; // load next question
-  } else if (questionNum == 4) {
-    if (input.toLowerCase() === 'yes' || input === 1) {
-      answer = 'Perfect!';
-      waitTime = 5000;
-      question = 'Whats your favorite place?';
-    } else if (input.toLowerCase() === 'no' || input === 0) {
-      socket.emit('changeFont', 'white'); /// we really should look up the inverse of what we said befor.
-      answer = ''
-      question = 'How about now?';
-      waitTime = 0;
-      questionNum--; // Here we go back in the question number this can end up in a loop
-    } else {
-      question = 'Can you still read the font?'; // load next question
-      answer = 'I did not understand you. Could you please answer "yes" or "no"?'
-      questionNum--;
-      waitTime = 5000;
-    }
-    // load next question
-  } else {
-    answer = 'I have nothing more to say!'; // output response
+    waitTime = 2000;
+    question = 'How many people are you travelling with?'; // load next question
+  }
+  else {
+
+    answer = 'You should travel to ' + matchDestination() + "!" // output response
     waitTime = 0;
     question = '';
   }
@@ -96,6 +83,43 @@ function bot(data, socket, questionNum) {
   socket.emit('answer', answer);
   setTimeout(timedQuestion, waitTime, socket, question);
   return (questionNum + 1);
+}
+function matchDestination() {
+
+  var Destinations =  [
+    ["Cabo", "Summer", "warm", "Recreation", "Recreation Activities"],
+    ["Aspen", "Winter", "cold", "Recreation", "Recreation Activities"],
+    ["Boston", "Winter", "cold", "Landmark", "city"],
+    ["Rome", "Summer", "warm", "Landmark", "city"]
+  ];
+
+  var arrayLength = Destinations.length;
+  var destLength = Destinations[0].length;
+
+
+  var destinationCounts = [];
+  var max_count = 0;
+  var category = "";
+  for (var i = 0; i < arrayLength; i++) {
+    var count = 0;
+    for (var j = 1; j < destLength; j++){
+      console.log(i);
+      console.log(j);
+      console.log(Destinations[i][j]);
+      if (userResponses.includes(Destinations[i][j]) == true){
+        count = count + 1;
+      }
+    }
+    if (count > max_count){
+        category = Destinations[i][0];
+        max_count = count;
+    }
+    destinationCounts.push(count);
+  }
+  console.log(destinationCounts);
+  console.log(category);
+  return category
+
 }
 
 function timedQuestion(socket, question) {
