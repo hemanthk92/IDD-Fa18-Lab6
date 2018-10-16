@@ -9,6 +9,7 @@ To submit your lab, fork [this repository](https://github.com/FAR-Lab/IDD-Fa18-L
 ## Make the ChatBot your own
 
 **Describe what changes you made to the baseline chatbot here. Don't forget to push your modified code to this repository.**
+I made a chatbot that makes travel suggestions. I changed the questions to questions about a traveler's preferences for travel, like what climate, season and activities would they like to do. The chatbot matches the input text from the user to a travel destination by matching words and keywords. I added a few datatypes to store the user responses and I created a list of keywords for each destination. And in the matchDestination, I calculate the word frequency of the key words for each category and return the destination with the largest category. 
 
 ## Record someone trying out your ChatBot
 
